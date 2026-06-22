@@ -67,3 +67,23 @@ exports.createOrder = async (
 
  }
 };
+
+exports.acceptOrder = async (
+ req,
+ res
+) => {
+
+ await db.execute(
+ `
+ UPDATE orders
+ SET status='ACCEPTED'
+ WHERE id=?
+ `,
+ [req.params.id]
+ );
+
+ res.json({
+   success:true
+ });
+
+};

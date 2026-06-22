@@ -5,23 +5,24 @@ const sendNewOrderNotification = async (
   orderId
 ) => {
   try {
-   const message = {
+
+const message = {
   token: fcmToken,
-  notification: {
-    title: "New Order Received",
+
+  data: {
+    type: 'NEW_ORDER',
+    orderId: String(orderId),
+    title: 'New Order Received',
     body: `Order #${orderId}`,
   },
+
   android: {
-    priority: "high",
-    notification: {
-      sound: "default",
-      channelId: "orders",
-    },
+    priority: 'high',
   },
 };
 
-    const response =
-      await firebase.messaging.send(message);
+const response =
+  await firebase.messaging.send(message);
 
     console.log(
       "FCM SUCCESS:",
@@ -29,11 +30,14 @@ const sendNewOrderNotification = async (
     );
 
     return response;
+
   } catch (err) {
+
     console.error(
       "FCM ERROR:",
       err
     );
+
   }
 };
 

@@ -17,7 +17,7 @@ exports.registerToken = async (req, res) => {
       `,
       [adminName, fcmToken]
     );
-
+console.log("Fcm token recieved",req.body );
     res.json({
       success: true,
       message: "Token saved successfully",
