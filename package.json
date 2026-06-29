@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@notifee/react-native": "^9.1.8",
+    "@react-native-firebase/app": "^25.1.0",
+    "@react-native-firebase/messaging": "^25.1.0"
+  }
+}
