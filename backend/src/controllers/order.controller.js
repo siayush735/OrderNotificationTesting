@@ -172,4 +172,8 @@ exports.acceptOrder = async (req, res) => {
     success: true,
   });
 
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> effcdb4a327fa0ea69dde5f23b7d60ff08ed16e0
