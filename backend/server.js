@@ -1,6 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const notificationRoutes = require("./src/routes/notification.routes.js");
+const notificationRoutes = require("./src/routes/notification.routes");
 const db = require("./db.js");
 const adminRoutes = require("./src/routes/admin.routes");
 
