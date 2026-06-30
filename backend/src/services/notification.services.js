@@ -40,6 +40,38 @@ const sendNotificationToAdmin = async (
   }
 };
 
+const sendStopNotification = async (
+  token,
+  notificationId
+) => {
+
+  try {
+
+    const message = {
+
+      token,
+
+      data: {
+        type: "STOP_NOTIFICATION",
+        notificationId: String(notificationId),
+      },
+
+      android: {
+        priority: "high",
+      },
+
+    };
+
+    return await firebase.messaging.send(message);
+
+  } catch (err) {
+
+    console.error(err);
+
+  }
+
+};
+
 module.exports = {
   sendNotificationToAdmin,
   sendStopNotification,
