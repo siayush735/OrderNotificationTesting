@@ -1,30 +1,6 @@
 const firebase = require("../config/firebase");
 
 const sendNotificationToAdmin = async (
-    token,
-    notificationId,
-    title,
-    body
-) => {
-
-    const message = {
-        token,
-
-        data: {
-            type: "NEW_NOTIFICATION",
-            notificationId: String(notificationId),
-            title,
-            body,
-        },
-
-        android: {
-            priority: "high",
-        },
-    };
-
-    return firebase.messaging.send(message);
-};
-const sendNotificationToAdmin = async (
   token,
   notificationId,
   title,
