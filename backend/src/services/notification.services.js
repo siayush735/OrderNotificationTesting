@@ -1,67 +1,62 @@
 const firebase = require("../config/firebase");
 
-const sendNewOrderNotification = async (
-  fcmToken,
-  orderId
+const sendNotificationToAdmin = async (
+    token,
+    notificationId,
+    title,
+    body
 ) => {
+
+    const message = {
+        token,
+
+        data: {
+            type: "NEW_NOTIFICATION",
+            notificationId: String(notificationId),
+            title,
+            body,
+        },
+
+        android: {
+            priority: "high",
+        },
+    };
+
+    return firebase.messaging.send(message);
+};
+const sendStopNotification = async (
+  token,
+  notificationId
+) => {
+
   try {
 
-const message = {
-  token: fcmToken,
+    const message = {
 
-  data: {
-    type: 'NEW_ORDER',
-    orderId: String(orderId),
-    title: 'New Order Received',
-    body: `Order #${orderId}`,
-  },
+      token,
 
-  android: {
-    priority: 'high',
-  },
-};
+      data: {
+        type: "STOP_NOTIFICATION",
+        notificationId: String(notificationId),
+      },
 
-const response =
-  await firebase.messaging.send(message);
+      android: {
+        priority: "high",
+      },
 
-    console.log(
-      "FCM SUCCESS:",
-      response
-    );
+    };
 
-    return response;
+    return await firebase.messaging.send(message);
 
   } catch (err) {
 
-    console.error(
-      "FCM ERROR:",
-      err
-    );
+    console.error(err);
 
   }
-};
 
-const sendOrderAcceptedNotification = async (
-  token,
-  orderId
-) => {
-  const message = {
-    token,
-
-    data: {
-      type: "ORDER_ACCEPTED",
-      orderId: String(orderId),
-    },
-
-    android: {
-      priority: "high",
-    },
-  };
-
-  return firebase.messaging.send(message);
 };
 
 module.exports = {
-  sendNewOrderNotification,
-  sendOrderAcceptedNotification,
+  sendNotificationToAdmin,
+  sendStopNotification,
 };

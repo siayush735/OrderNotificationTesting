@@ -1,6 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const orderRoutes = require("./src/routes/order.routes.js");
+const notificationRoutes = require("./src/routes/notification.routes.js");
 const db = require("./db.js");
 const adminRoutes = require("./src/routes/admin.routes");
 
@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
-app.use("/api/orders", orderRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use("/api/admin", adminRoutes);
 

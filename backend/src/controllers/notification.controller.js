@@ -1,0 +1,143 @@
+const db = require("../../db");
+
+const {
+  sendNotificationToAdmin,
+  sendStopNotification,
+} = require("../services/notification.services");
+
+const { title, body } = req.body;
+
+const [result] = await db.execute(
+  `
+  INSERT INTO notification_send
+  (
+    title,
+    body,
+    status
+  )
+  VALUES
+  (
+    ?,
+    ?,
+    'PENDING'
+  )
+  `,
+  [title, body]
+);
+
+const notificationId = result.insertId;
+
+const [admins] = await db.execute(`
+  SELECT fcm_token
+  FROM admin_devices
+`);
+
+for (const admin of admins) {
+  await sendNotificationToAdmin(
+    admin.fcm_token,
+    notificationId,
+    title,
+    body
+  );
+}
+
+exports.acknowledgeNotification = async (req, res) => {
+
+  try {
+
+    const notificationId = req.params.id;
+
+    const adminName =
+      req.body.adminName || "Admin";
+
+    const [result] =
+      await db.execute(
+        `
+        UPDATE notification_send
+        SET
+          status='ACKNOWLEDGED',
+          acknowledged_by=?
+        WHERE
+          id=?
+          AND status='PENDING'
+        `,
+        [
+          adminName,
+          notificationId,
+        ]
+      );
+
+    if (result.affectedRows === 0) {
+
+      return res.json({
+        success: false,
+        message:
+          "Already acknowledged",
+      });
+
+    }
+
+    const [admins] =
+      await db.execute(`
+        SELECT fcm_token
+        FROM admin_devices
+      `);
+
+    for (const admin of admins) {
+
+      await sendStopNotification(
+        admin.fcm_token,
+        notificationId
+      );
+
+    }
+
+    res.json({
+      success: true,
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+
+  }
+
+};
+
+exports.getLatestNotification =
+  async (req, res) => {
+
+    try {
+
+  const [rows] = await db.execute(`
+    SELECT
+        id,
+        title,
+        body,
+        status,
+        acknowledged_by,
+        created_at
+    FROM notification_send
+    WHERE status='PENDING'
+    ORDER BY id DESC
+    LIMIT 1
+`);
+
+res.json({
+    success: true,
+    notification: rows.length ? rows[0] : null,
+});
+
+    } catch (err) {
+
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+
+    }
+
+};
