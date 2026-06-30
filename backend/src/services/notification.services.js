@@ -24,7 +24,7 @@ const sendNotificationToAdmin = async (
 
     return firebase.messaging.send(message);
 };
-const firebase = require("../config/firebase");
+
 
 const sendNotificationToAdmin = async (
   token,
