@@ -49,13 +49,10 @@ exports.sendNotification = async (req, res) => {
     });
 
   } catch (err) {
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-
-  }
+    console.log(err.code);
+    console.log(err.message);
+    throw err;
+}
 };
 
 exports.acknowledgeNotification = async (req, res) => {
