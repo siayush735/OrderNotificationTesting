@@ -1,7 +1,7 @@
 const db = require("../../db");
 
 const {
- sendNewOrderNotification
+ sendNewOrderNotification, sendOrderAcceptedNotification
 } = require("../services/notification.services");
 
 exports.createOrder = async (
@@ -68,24 +68,41 @@ exports.createOrder = async (
  }
 };
 
-exports.acceptOrder = async (
- req,
- res
-) => {
+exports.acceptOrder = async (req, res) => {
+  const orderId = req.params.id;
 
- await db.execute(
- `
- UPDATE orders
- SET status='ACCEPTED'
- WHERE id=?
- `,
- [req.params.id]
- );
+  const [result] = await db.execute(
+    `
+    UPDATE orders
+    SET status='ACCEPTED'
+    WHERE id=? AND status='PENDING'
+    `,
+    [orderId]
+  );
 
- res.json({
-   success:true
- });
+  if (result.affectedRows === 0) {
+    return res.json({
+      success: false,
+      message: "Order already accepted",
+    });
+  }
 
+  // Get all admin tokens
+  const [admins] = await db.execute(`
+      SELECT fcm_token
+      FROM admin_devices
+  `);
+
+  for (const admin of admins) {
+    await sendOrderAcceptedNotification(
+      admin.fcm_token,
+      orderId
+    );
+  }
+
+  res.json({
+    success: true,
+  });
 };
 
 exports.getLatestOrder = async (req, res) => {
@@ -147,33 +164,4 @@ exports.rejectOrder = async (req, res) => {
 
 };
 
-exports.acceptOrder = async (req, res) => {
 
-  const [result] = await db.execute(
-    `
-    UPDATE orders
-    SET status='ACCEPTED'
-    WHERE id=?
-    AND status='PENDING'
-    `,
-    [req.params.id]
-  );
-
-  if (result.affectedRows === 0) {
-
-    return res.status(409).json({
-      success: false,
-      message: "Order already processed",
-    });
-
-  }
-
-  res.json({
-    success: true,
-  });
-
-<<<<<<< HEAD
-};
-=======
-};
->>>>>>> effcdb4a327fa0ea69dde5f23b7d60ff08ed16e0

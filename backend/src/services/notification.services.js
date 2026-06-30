@@ -41,6 +41,27 @@ const response =
   }
 };
 
+const sendOrderAcceptedNotification = async (
+  token,
+  orderId
+) => {
+  const message = {
+    token,
+
+    data: {
+      type: "ORDER_ACCEPTED",
+      orderId: String(orderId),
+    },
+
+    android: {
+      priority: "high",
+    },
+  };
+
+  return firebase.messaging.send(message);
+};
+
 module.exports = {
   sendNewOrderNotification,
+  sendOrderAcceptedNotification,
 };
