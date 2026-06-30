@@ -5,44 +5,60 @@ const {
   sendStopNotification,
 } = require("../services/notification.services");
 
-const { title, body } = req.body;
+exports.sendNotification = async (req, res) => {
+  try {
+    const { title, body } = req.body;
 
-const [result] = await db.execute(
-  `
-  INSERT INTO notification_send
-  (
-    title,
-    body,
-    status
-  )
-  VALUES
-  (
-    ?,
-    ?,
-    'PENDING'
-  )
-  `,
-  [title, body]
-);
+    const [result] = await db.execute(
+      `
+      INSERT INTO notification_send
+      (
+        title,
+        body,
+        status
+      )
+      VALUES
+      (
+        ?,
+        ?,
+        'PENDING'
+      )
+      `,
+      [title, body]
+    );
 
-const notificationId = result.insertId;
+    const notificationId = result.insertId;
 
-const [admins] = await db.execute(`
-  SELECT fcm_token
-  FROM admin_devices
-`);
+    const [admins] = await db.execute(`
+      SELECT fcm_token
+      FROM admin_devices
+    `);
 
-for (const admin of admins) {
-  await sendNotificationToAdmin(
-    admin.fcm_token,
-    notificationId,
-    title,
-    body
-  );
-}
+    for (const admin of admins) {
+      await sendNotificationToAdmin(
+        admin.fcm_token,
+        notificationId,
+        title,
+        body
+      );
+    }
+
+    res.json({
+      success: true,
+      notificationId,
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+
+  }
+};
 
 exports.acknowledgeNotification = async (req, res) => {
-
   try {
 
     const notificationId = req.params.id;
@@ -50,46 +66,39 @@ exports.acknowledgeNotification = async (req, res) => {
     const adminName =
       req.body.adminName || "Admin";
 
-    const [result] =
-      await db.execute(
-        `
-        UPDATE notification_send
-        SET
-          status='ACKNOWLEDGED',
-          acknowledged_by=?
-        WHERE
-          id=?
-          AND status='PENDING'
-        `,
-        [
-          adminName,
-          notificationId,
-        ]
-      );
+    const [result] = await db.execute(
+      `
+      UPDATE notification_send
+      SET
+        status='ACKNOWLEDGED',
+        acknowledged_by=?
+      WHERE
+        id=?
+        AND status='PENDING'
+      `,
+      [
+        adminName,
+        notificationId,
+      ]
+    );
 
     if (result.affectedRows === 0) {
-
       return res.json({
         success: false,
-        message:
-          "Already acknowledged",
+        message: "Already acknowledged",
       });
-
     }
 
-    const [admins] =
-      await db.execute(`
-        SELECT fcm_token
-        FROM admin_devices
-      `);
+    const [admins] = await db.execute(`
+      SELECT fcm_token
+      FROM admin_devices
+    `);
 
     for (const admin of admins) {
-
       await sendStopNotification(
         admin.fcm_token,
         notificationId
       );
-
     }
 
     res.json({
@@ -104,40 +113,38 @@ exports.acknowledgeNotification = async (req, res) => {
     });
 
   }
-
 };
 
-exports.getLatestNotification =
-  async (req, res) => {
+exports.getLatestNotification = async (req, res) => {
+  try {
 
-    try {
-
-  const [rows] = await db.execute(`
-    SELECT
+    const [rows] = await db.execute(`
+      SELECT
         id,
         title,
         body,
         status,
         acknowledged_by,
         created_at
-    FROM notification_send
-    WHERE status='PENDING'
-    ORDER BY id DESC
-    LIMIT 1
-`);
+      FROM notification_send
+      WHERE status='PENDING'
+      ORDER BY id DESC
+      LIMIT 1
+    `);
 
-res.json({
-    success: true,
-    notification: rows.length ? rows[0] : null,
-});
+    res.json({
+      success: true,
+      notification: rows.length
+        ? rows[0]
+        : null,
+    });
 
-    } catch (err) {
+  } catch (err) {
 
-      res.status(500).json({
-        success: false,
-        message: err.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
 
-    }
-
+  }
 };
