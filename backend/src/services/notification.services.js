@@ -1,11 +1,7 @@
 const firebase = require("../config/firebase");
+const db = require("../../db");
 
-const sendNotificationToAdmin = async (
-  token,
-  notificationId,
-  title,
-  body
-) => {
+const sendNotificationToAdmin = async (token, notificationId, title, body) => {
   try {
     console.log("Sending to:", token);
 
@@ -29,26 +25,28 @@ const sendNotificationToAdmin = async (
     console.log("FCM SUCCESS:", response);
 
     return response;
-
   } catch (err) {
+    if (err.code === "messaging/registration-token-not-registered") {
+      console.log("Removing invalid token");
 
-    console.log("Firebase code:", err.code);
-    console.log("Firebase message:", err.message);
-    console.log(err);
+      await db.execute(
+        `
+            DELETE FROM admin_devices
+            WHERE fcm_token = ?
+            `,
+        [token],
+      );
+
+      return;
+    }
 
     throw err;
   }
 };
 
-const sendStopNotification = async (
-  token,
-  notificationId
-) => {
-
+const sendStopNotification = async (token, notificationId) => {
   try {
-
     const message = {
-
       token,
 
       data: {
@@ -59,17 +57,12 @@ const sendStopNotification = async (
       android: {
         priority: "high",
       },
-
     };
 
     return await firebase.messaging.send(message);
-
   } catch (err) {
-
     console.error(err);
-
   }
-
 };
 
 module.exports = {
