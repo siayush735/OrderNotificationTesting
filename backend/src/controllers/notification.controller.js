@@ -80,6 +80,12 @@ exports.acknowledgeNotification = async (req, res) => {
     );
 
     if (result.affectedRows === 0) {
+       const [rows] = await db.execute(
+        `SELECT status FROM notification_send WHERE id=?`,
+        [notificationId]
+    );
+
+    console.log(rows);
       return res.json({
         success: false,
         message: "Already acknowledged",
