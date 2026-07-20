@@ -52,17 +52,30 @@ const sendStopNotification = async (token, notificationId) => {
       token,
       data: {
         type: "STOP_NOTIFICATION",
-        notificationId: String(notificationId),
+    notificationId: String(notificationId),
+    title: "Admin",
+    body: "STOP TEST"
       },
       android: {
         priority: "high",
       },
     };
+console.log("STOP MESSAGE:");
+console.log(JSON.stringify(message, null, 2));
+   const response = await firebase.messaging.sendEachForMulticast({
+    tokens: admins.map(a => a.fcm_token),
+    data: {
+        type: "STOP_NOTIFICATION",
+        notificationId: String(notificationId),
+        title: "STOP",
+        body: "STOP"
+    },
+    android: {
+        priority: "high"
+    }
+});
 
-    const response = await firebase.messaging.send(message);
-
-    console.log("STOP_NOTIFICATION sent:", response);
-
+console.log(JSON.stringify(response, null, 2));
     return response;
   } catch (err) {
     console.error("STOP_NOTIFICATION ERROR:", err);
