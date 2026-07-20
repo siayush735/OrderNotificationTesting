@@ -59,14 +59,14 @@ const sendStopNotification = async (token, notificationId) => {
       },
     };
 
-    const response = await firebase.messaging().send(message);
+    const response = await firebase.messaging.send(message);
 
     console.log("STOP_NOTIFICATION sent:", response);
 
     return response;
-
   } catch (err) {
     console.error("STOP_NOTIFICATION ERROR:", err);
+    throw err;
   }
 };
 
