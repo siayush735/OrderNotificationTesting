@@ -48,18 +48,20 @@ const sendStopNotification = async (token, notificationId) => {
   try {
     console.log("Sending STOP_NOTIFICATION to:", token);
 
-    const message = {
-      token,
-      data: {
-        type: "STOP_NOTIFICATION",
+    cconst message = {
+  token,
+  data: {
+    type: "STOP_NOTIFICATION",
     notificationId: String(notificationId),
-    title: "Admin",
-    body: "STOP TEST"
-      },
-      android: {
-        priority: "high",
-      },
-    };
+  },
+  notification: {
+    title: "Stop",
+    body: "Stop notification",
+  },
+  android: {
+    priority: "high",
+  },
+};
 console.log("STOP MESSAGE:");
 console.log(JSON.stringify(message, null, 2));
    const response = await firebase.messaging.sendEachForMulticast({
