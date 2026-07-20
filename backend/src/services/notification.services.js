@@ -46,6 +46,7 @@ const sendNotificationToAdmin = async (token, notificationId, title, body) => {
 
 const sendStopNotification = async (token, notificationId) => {
   try {
+    console.log("Sending STOP_NOTIFICATION to:", token);
     const message = {
       token,
 
@@ -58,7 +59,7 @@ const sendStopNotification = async (token, notificationId) => {
         priority: "high",
       },
     };
-
+console.log("STOP_NOTIFICATION sent:", response);
     return await firebase.messaging.send(message);
   } catch (err) {
     console.error(err);

@@ -86,12 +86,15 @@ exports.acknowledgeNotification = async (req, res) => {
       });
     }
 
+console.log(response);
     const [admins] = await db.execute(`
       SELECT fcm_token
       FROM admin_devices
     `);
 
     for (const admin of admins) {
+      console.log("Sending STOP to", admins.length, "devices");
+
       await sendStopNotification(
         admin.fcm_token,
         notificationId
@@ -111,6 +114,45 @@ exports.acknowledgeNotification = async (req, res) => {
 
   }
 };
+
+
+const deleteToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "FCM token is required",
+      });
+    }
+
+    const [result] = await db.execute(
+      `
+      DELETE FROM admin_devices
+      WHERE fcm_token = ?
+      `,
+      [token]
+    );
+
+    return res.json({
+      success: true,
+      deletedRows: result.affectedRows,
+      message:
+        result.affectedRows > 0
+          ? "Token deleted successfully"
+          : "Token not found",
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
 
 exports.getLatestNotification = async (req, res) => {
   try {

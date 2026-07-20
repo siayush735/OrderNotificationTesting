@@ -9,12 +9,12 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use("/api/notifications", notificationRoutes);
 
 app.use("/api/admin", adminRoutes);
-
-app.use(express.urlencoded({ extended: true }));
-
+4
 // Test Route
 app.get("/", (req, res) => {
   res.json({
