@@ -92,14 +92,14 @@ console.log(response);
       FROM admin_devices
     `);
 
-    for (const admin of admins) {
-      console.log("Sending STOP to", admins.length, "devices");
+   console.log("Sending STOP to", admins.length, "devices");
 
-      await sendStopNotification(
-        admin.fcm_token,
-        notificationId
-      );
-    }
+for (const admin of admins) {
+  await sendStopNotification(
+    admin.fcm_token,
+    notificationId
+  );
+}
 
     res.json({
       success: true,
