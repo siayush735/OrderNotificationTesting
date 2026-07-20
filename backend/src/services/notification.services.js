@@ -48,7 +48,7 @@ const sendStopNotification = async (token, notificationId) => {
   try {
     console.log("Sending STOP_NOTIFICATION to:", token);
 
-    cconst message = {
+    const message = {
   token,
   data: {
     type: "STOP_NOTIFICATION",
