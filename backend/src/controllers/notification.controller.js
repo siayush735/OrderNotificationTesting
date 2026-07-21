@@ -99,13 +99,21 @@ console.log(response);
     `);
 
    console.log("Sending STOP to", admins.length, "devices");
+console.log("===== SENDING STOP =====");
+console.log("Notification ID:", notificationId);
 
 for (const admin of admins) {
-  await sendStopNotification(
+  console.log("Token:", admin.fcm_token);
+
+  const response = await sendStopNotification(
     admin.fcm_token,
     notificationId
   );
+
+  console.log("Firebase response:", response);
 }
+
+console.log("===== STOP COMPLETE =====");
 
     res.json({
       success: true,
