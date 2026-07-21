@@ -45,6 +45,8 @@ const sendNotificationToAdmin = async (token, notificationId, title, body) => {
 };
 
 const sendStopNotification = async (token, notificationId) => {
+   console.log("========== INSIDE STOP FUNCTION ==========");
+    console.log("TOKEN:", token);
   try {
     console.log("Sending STOP_NOTIFICATION to:", token);
 
