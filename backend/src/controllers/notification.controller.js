@@ -84,7 +84,7 @@ exports.acknowledgeNotification = async (req, res) => {
         `SELECT status FROM notification_send WHERE id=?`,
         [notificationId]
     );
-console.log("affectedRows =", result.affectedRows);
+
     console.log(rows);
       return res.json({
         success: false,
@@ -97,23 +97,16 @@ console.log("affectedRows =", result.affectedRows);
       FROM admin_devices
     `);
 
-   console.log("Sending STOP to", admins.length, "devices");
-console.log("===== SENDING STOP =====");
-console.log("Notification ID:", notificationId);
+   
 
 for (const admin of admins) {
-  console.log("Token:", admin.fcm_token);
+
 
   const response = await sendStopNotification(
     admin.fcm_token,
     notificationId
   );
-
-  console.log("Firebase response:", response);
 }
-
-console.log("===== STOP COMPLETE =====");
-
     res.json({
       success: true,
     });

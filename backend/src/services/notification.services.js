@@ -3,7 +3,7 @@ const db = require("../../db");
 
 const sendNotificationToAdmin = async (token, notificationId, title, body) => {
   try {
-    console.log("Sending to:", token);
+
 
     const message = {
       token,
@@ -45,10 +45,8 @@ const sendNotificationToAdmin = async (token, notificationId, title, body) => {
 };
 
 const sendStopNotification = async (token, notificationId) => {
-   console.log("========== INSIDE STOP FUNCTION ==========");
-    console.log("TOKEN:", token);
+  
   try {
-    console.log("Sending STOP_NOTIFICATION to:", token);
 
     const message = {
       token,
@@ -61,15 +59,14 @@ const sendStopNotification = async (token, notificationId) => {
       },
     };
 
-    console.log("STOP MESSAGE:", JSON.stringify(message, null, 2));
+   
 
     const response = await firebase.messaging.send(message);
 
-    console.log("STOP RESPONSE:", response);
 
     return response;
   } catch (err) {
-    console.error("STOP_NOTIFICATION ERROR:", err);
+    
     throw err;
   }
 };
