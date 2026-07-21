@@ -84,7 +84,7 @@ exports.acknowledgeNotification = async (req, res) => {
         `SELECT status FROM notification_send WHERE id=?`,
         [notificationId]
     );
-
+console.log("affectedRows =", result.affectedRows);
     console.log(rows);
       return res.json({
         success: false,
@@ -92,7 +92,6 @@ exports.acknowledgeNotification = async (req, res) => {
       });
     }
 
-console.log(response);
     const [admins] = await db.execute(`
       SELECT fcm_token
       FROM admin_devices
