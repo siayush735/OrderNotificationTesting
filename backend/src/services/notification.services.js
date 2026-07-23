@@ -1,13 +1,14 @@
 const firebase = require("../config/firebase");
 const db = require("../../db");
 
-const sendNotificationToAdmin = async (token, title, body) => {
+const sendNotificationToAdmin = async (token, title, body, notificationId) => {
   try {
 
     const message = {
       token,
       data: {
         type: "NEW_NOTIFICATION",
+         notificationId: String(notificationId),
         title,
         body,
       },

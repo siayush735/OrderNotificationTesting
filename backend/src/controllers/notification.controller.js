@@ -10,7 +10,7 @@ exports.sendNotification = async (req, res) => {
   try {
 
     const { title, body } = req.body;
-
+ const notificationId = Date.now().toString();
     const [admins] = await db.execute(`
       SELECT fcm_token
       FROM admin_devices
@@ -21,7 +21,8 @@ exports.sendNotification = async (req, res) => {
       await sendNotificationToAdmin(
         admin.fcm_token,
         title,
-        body
+        body,
+        notificationId
       );
 
     }
