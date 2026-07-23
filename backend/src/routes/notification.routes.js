@@ -4,20 +4,15 @@ const router = express.Router();
 
 const {
   sendNotification,
-  acknowledgeNotification,
-  getLatestNotification,
+  acknowledgeNotification
 } = require("../controllers/notification.controller");
 
 router.post("/send", sendNotification);
 
 router.post(
-  "/acknowledge/:id",
+  "/acknowledge",
   acknowledgeNotification
 );
 
-router.get(
-  "/latest",
-  getLatestNotification
-);
 
 module.exports = router;
